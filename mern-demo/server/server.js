@@ -1,7 +1,12 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-require("dotenv").config({ path: require("path").resolve(__dirname, "../.env") });
+
+require("dotenv").config({
+    path: require("path").resolve(__dirname, "../.env")
+});
+
+const Student = require("./models/Student");
 
 const app = express();
 
@@ -15,6 +20,30 @@ app.get("/api/hello", (req, res) => {
     res.json({
         message: "Backend MERN is running!"
     });
+});
+
+app.get("/api/students", async (req, res) => {
+    try {
+        const students = await Student.find();
+        res.json(students);
+    } catch (error) {
+        res.status(500).json({
+            message: "Lỗi khi lấy danh sách sinh viên",
+            error: error.message
+        });
+    }
+});
+
+app.post("/api/students", async (req, res) => {
+    try {
+        const student = await Student.create(req.body);
+        res.status(201).json(student);
+    } catch (error) {
+        res.status(400).json({
+            message: "Lỗi khi thêm sinh viên",
+            error: error.message
+        });
+    }
 });
 
 mongoose.connect(MONGODB_URI)
